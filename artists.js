@@ -1,4 +1,3 @@
-//consider including paintings as a key on each artist object and then move all of those objects over from paintings array
 const artists = [
   {
     "name": "Paul Gauguin",
