@@ -18,3 +18,13 @@ app.get('/api/v1/artists', (request, response) => {
       response.status(500).json({ error })
     })
 })
+
+app.get('/api/v1/artworks', (request, response) => {
+  database('artworks').select()
+    .then((artworks) => {
+      response.status(200).json(artworks)
+    })
+    .catch((error) => {
+      response.status(500).json
+    })
+})
