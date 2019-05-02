@@ -65,7 +65,7 @@ app.post('/api/v1/artists/:id/artworks', (request, response) => {
 
   database('artworks').insert({ ...artwork, artist_id: artistId }, 'id')
     .then(artwork => {
-      response.status(201).json( `You successfully added a piece of art!` )
+      response.status(201).json( `You successfully added a new piece of art!` )
     })
     .catch(error => {
       response.status(500).json({ error })
@@ -111,6 +111,20 @@ app.get('/api/v1/artworks/:id', (request, response) => {
         response.status(404).json({
           error: `Could not find a piece of art that matched id ${request.params.id}`
         })
+      }
+    })
+    .catch(error => {
+      response.status(500).json({ error })
+    })
+})
+
+app.delete('/api/v1/artworks/:id', (request, response) => {
+  database('artworks').where('id', request.params.id).select().del()
+    .then(artwork => {
+      if (artwork) {
+        response.status(201).json({ message: `The artwork with id ${request.params.id} was successfully deleted.`})
+      } else {
+        response.status(404).json({ error: `We could not find an artwork with id of ${request.params.id} to delete.`})
       }
     })
     .catch(error => {
