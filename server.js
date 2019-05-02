@@ -80,3 +80,19 @@ app.get('/api/v1/artworks', (request, response) => {
       response.status(500).json
     })
 })
+
+app.get('/api/v1/artworks/:id', (request, response) => {
+  database('artworks').where('id', request.params.id).select()
+    .then(artworks => {
+      if (artworks.length) {
+        response.status(200).json(artworks)
+      } else {
+        response.status(404).json({
+          error: `Could not find a piece of art that matched id ${request.params.id}`
+        })
+      }
+    })
+    .catch(error => {
+      response.status(500).json({ error })
+    })
+})
