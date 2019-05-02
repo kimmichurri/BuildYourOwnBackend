@@ -35,6 +35,22 @@ app.get('/api/v1/artists/:id', (request, response) => {
     })
 })
 
+app.get('/api/v1/artists/:id/artworks', (request, response) => {
+  database('artworks').where('artist_id', request.params.id).select()
+    .then(artworks => {
+      if (artworks.length) {
+        response.status(200).json(artworks)
+      } else {
+        response.status(404).json({
+          error: `Could not find artworks for the artist with id ${request.params.id}`
+        })
+      }
+    })
+    .catch(error => {
+      response.status(500).json({ error })
+    })
+})
+
 app.post('/api/v1/artists', (request, response) => {
   const artist = request.body;
 
@@ -64,4 +80,3 @@ app.get('/api/v1/artworks', (request, response) => {
       response.status(500).json
     })
 })
-
