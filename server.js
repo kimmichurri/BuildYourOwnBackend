@@ -19,6 +19,22 @@ app.get('/api/v1/artists', (request, response) => {
     })
 })
 
+app.get('/api/v1/artists/:id', (request, response) => {
+  database('artists').where('id', request.params.id).select()
+    .then(artists => {
+      if (artists.length) {
+        response.status(200).json(artists)
+      } else {
+        response.status(404).json({
+          error: `Could not find artist with id ${request.params.id}`
+        })
+      }
+    })
+    .catch(error => {
+      response.status(500).json({ error })
+    })
+})
+
 app.post('/api/v1/artists', (request, response) => {
   const artist = request.body;
 
