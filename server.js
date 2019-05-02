@@ -26,7 +26,7 @@ app.get('/api/v1/artists/:id', (request, response) => {
         response.status(200).json(artists)
       } else {
         response.status(404).json({
-          error: `Could not find artist with id ${request.params.id}`
+          error: `Could not find an artist with the id ${request.params.id}`
         })
       }
     })
