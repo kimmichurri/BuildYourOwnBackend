@@ -51,6 +51,27 @@ app.get('/api/v1/artists/:id/artworks', (request, response) => {
     })
 })
 
+app.post('/api/v1/artists/:id/artworks', (request, response) => {
+  const artwork = request.body;
+  const artistId = request.params.id;
+
+  for (let requiredParameter of ['title', 'date', 'img_url']) {
+    if(!artwork[requiredParameter]){
+      return response
+        .status(422)
+        .send({ error: `Expected format: { title: <String>, date: <Integer>, img_url: <String> } You're missing a "${requiredParameter}" property.` })
+    }
+  }
+
+  database('artworks').insert({ ...artwork, artist_id: artistId }, 'id')
+    .then(artwork => {
+      response.status(201).json( `You successfully added a piece of art!` )
+    })
+    .catch(error => {
+      response.status(500).json({ error })
+    })
+})
+
 app.post('/api/v1/artists', (request, response) => {
   const artist = request.body;
 
