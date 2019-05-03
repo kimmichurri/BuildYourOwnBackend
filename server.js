@@ -11,8 +11,8 @@ app.listen(port, () => console.log(`App is listening on port ${port}`));
 
 app.get('/api/v1/artists', (request, response) => {
   database('artists').select()
-    .then((artists) => {
-      if (artists.length) {
+    .then(artists => {
+      if (artists) {
         response.status(200).json(artists)
       } else {
         response.status(404).json({
@@ -27,9 +27,9 @@ app.get('/api/v1/artists', (request, response) => {
 
 app.get('/api/v1/artists/:id', (request, response) => {
   database('artists').where('id', request.params.id).select()
-    .then(artists => {
-      if (artists.length) {
-        response.status(200).json(artists)
+    .then(artist => {
+      if (artist) {
+        response.status(200).json(artist)
       } else {
         response.status(404).json({
           error: `Could not find an artist with the id ${request.params.id}`
@@ -44,7 +44,7 @@ app.get('/api/v1/artists/:id', (request, response) => {
 app.get('/api/v1/artists/:id/artworks', (request, response) => {
   database('artworks').where('artist_id', request.params.id).select()
     .then(artworks => {
-      if (artworks.length) {
+      if (artworks) {
         response.status(200).json(artworks)
       } else {
         response.status(404).json({
@@ -62,15 +62,16 @@ app.post('/api/v1/artists', (request, response) => {
 
   for (let requiredParameter of ['name', 'nationality']) {
     if(!artist[requiredParameter]) {
-      return response 
-        .status(422)
-        .send({ error: `Expected format: { name: <String>, nationality: <String> } You're missing a "${requiredParameter}" property.` })
+      response.status(422).json({ 
+        error: `Expected format: { name: <String>, nationality: <String> } You're missing a "${requiredParameter}" property.` 
+      })
     }
   }
 
   database('artists').insert(artist, 'id')
     .then(artist => {
-      response.status(201).json({ id: artist[0] })
+      response.status(201).json({ 
+        id: artist[0], message: "The artist has successfully been added!" })
     })
     .catch(error => {
       response.status(500).json({ error });
@@ -79,12 +80,12 @@ app.post('/api/v1/artists', (request, response) => {
 
 app.get('/api/v1/artworks', (request, response) => {
   database('artworks').select()
-    .then((artworks) => {
-      if (artworks.length) {
+    .then(artworks => {
+      if (artworks) {
         response.status(200).json(artworks)
       } else {
         response.status(404).json({
-          error: "There currently aren't any artworks in the database"
+          error: "There currently aren't any artworks in the database."
         })
       }
     })
@@ -95,9 +96,9 @@ app.get('/api/v1/artworks', (request, response) => {
 
 app.get('/api/v1/artworks/:id', (request, response) => {
   database('artworks').where('id', request.params.id).select()
-    .then(artworks => {
-      if (artworks.length) {
-        response.status(200).json(artworks)
+    .then(artwork => {
+      if (artwork) {
+        response.status(200).json(artwork)
       } else {
         response.status(404).json({
           error: `Could not find a piece of art that matched id ${request.params.id}`
@@ -115,9 +116,8 @@ app.post('/api/v1/artists/:id/artworks', (request, response) => {
 
   for (let requiredParameter of ['title', 'date', 'img_url']) {
     if(!artwork[requiredParameter]){
-      return response
-        .status(422)
-        .send({ error: `Expected format: { title: <String>, date: <Integer>, img_url: <String> } You're missing a "${requiredParameter}" property.` })
+      response.status(422).json({ 
+        error: `Expected format: { title: <String>, date: <Integer>, img_url: <String> } You're missing a "${requiredParameter}" property.` })
     }
   }
 
@@ -134,9 +134,11 @@ app.delete('/api/v1/artworks/:id', (request, response) => {
   database('artworks').where('id', request.params.id).select().del()
     .then(artwork => {
       if (artwork) {
-        response.status(200).json({ message: `The artwork with id ${request.params.id} was successfully deleted.`})
+        response.status(204).json({ 
+          message: `The artwork with id ${request.params.id} was successfully deleted.`})
       } else {
-        response.status(404).json({ error: `We could not find an artwork with id of ${request.params.id} to delete.`})
+        response.status(404).json({ 
+          error: `We could not find an artwork with id of ${request.params.id} to delete.`})
       }
     })
     .catch(error => {
